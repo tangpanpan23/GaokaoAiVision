@@ -1,0 +1,170 @@
+syntax = "proto3";
+
+package score;
+
+option go_package = "lighthouse-volunteer/app/score/rpc/score";
+
+// 数据查询服务
+service Score {
+  // 查询录取分数线
+  rpc QueryAdmissionScores(QueryAdmissionScoresReq) returns (QueryAdmissionScoresResp);
+
+  // 获取学校信息
+  rpc GetCollegeInfo(GetCollegeInfoReq) returns (GetCollegeInfoResp);
+
+  // 批量获取学校信息
+  rpc BatchGetCollegeInfo(BatchGetCollegeInfoReq) returns (BatchGetCollegeInfoResp);
+
+  // 获取专业信息
+  rpc GetMajorInfo(GetMajorInfoReq) returns (GetMajorInfoResp);
+
+  // 批量获取专业信息
+  rpc BatchGetMajorInfo(BatchGetMajorInfoReq) returns (BatchGetMajorInfoResp);
+
+  // 获取分数线趋势
+  rpc GetScoreTrend(GetScoreTrendReq) returns (GetScoreTrendResp);
+
+  // 获取位次对应的分数
+  rpc GetRankToScore(GetRankToScoreReq) returns (GetRankToScoreResp);
+}
+
+// 请求和响应消息
+message QueryAdmissionScoresReq {
+  string province = 1;
+  int32 score_type = 2;
+  int32 min_score = 3;
+  int32 max_score = 4;
+  int32 min_rank = 5;
+  int32 max_rank = 6;
+  string college_name = 7;
+  string major_name = 8;
+  string batch = 9;
+  int32 year = 10;
+  int32 page = 11;
+  int32 page_size = 12;
+  string sort_by = 13; // score, rank, year
+  string sort_order = 14; // asc, desc
+}
+
+message QueryAdmissionScoresResp {
+  repeated AdmissionScore scores = 1;
+  int64 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message AdmissionScore {
+  int64 id = 1;
+  int32 year = 2;
+  string province = 3;
+  string college_code = 4;
+  string college_name = 5;
+  string major_code = 6;
+  string major_name = 7;
+  string batch = 8;
+  int32 score_type = 9;
+  int32 min_score = 10;
+  int32 min_rank = 11;
+  int32 avg_score = 12;
+  int32 enrollment_count = 13;
+  string data_source = 14;
+  int32 data_quality = 15;
+  string created_at = 16;
+}
+
+message GetCollegeInfoReq {
+  string college_code = 1;
+}
+
+message GetCollegeInfoResp {
+  CollegeInfo college = 1;
+}
+
+message BatchGetCollegeInfoReq {
+  repeated string college_codes = 1;
+}
+
+message BatchGetCollegeInfoResp {
+  repeated CollegeInfo colleges = 1;
+}
+
+message CollegeInfo {
+  int64 id = 1;
+  string college_code = 2;
+  string college_name = 3;
+  string province = 4;
+  string city = 5;
+  string level = 6;
+  string type = 7;
+  string nature = 8;
+  string website = 9;
+  string description = 10;
+  int32 ranking = 11;
+  double employment_rate = 12;
+  string created_at = 13;
+}
+
+message GetMajorInfoReq {
+  string major_code = 1;
+}
+
+message GetMajorInfoResp {
+  MajorInfo major = 1;
+}
+
+message BatchGetMajorInfoReq {
+  repeated string major_codes = 1;
+}
+
+message BatchGetMajorInfoResp {
+  repeated MajorInfo majors = 1;
+}
+
+message MajorInfo {
+  int64 id = 1;
+  string major_code = 2;
+  string major_name = 3;
+  string category = 4;
+  string subcategory = 5;
+  string degree = 6;
+  int32 duration = 7;
+  string description = 8;
+  string employment_direction = 9;
+  string salary_range = 10;
+  string demand_level = 11;
+  string created_at = 12;
+}
+
+message GetScoreTrendReq {
+  string college_code = 1;
+  string major_code = 2;
+  string province = 3;
+  int32 score_type = 4;
+  string batch = 5;
+  int32 years = 6; // 获取最近几年数据，默认5年
+}
+
+message GetScoreTrendResp {
+  repeated ScoreTrendPoint trend = 1;
+}
+
+message ScoreTrendPoint {
+  int32 year = 1;
+  int32 min_score = 2;
+  int32 min_rank = 3;
+  int32 avg_score = 4;
+  int32 enrollment_count = 5;
+}
+
+message GetRankToScoreReq {
+  string province = 1;
+  int32 score_type = 2;
+  int32 rank = 3;
+  int32 year = 4;
+}
+
+message GetRankToScoreResp {
+  int32 estimated_score = 1;
+  string confidence = 2; // high, medium, low
+  string note = 3;
+}

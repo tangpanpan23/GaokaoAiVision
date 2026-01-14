@@ -1,0 +1,41 @@
+# 多阶段构建：爬虫服务
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /app
+
+RUN apk add --no-cache git ca-certificates tzdata
+
+ENV GOPROXY=https://goproxy.cn,direct
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+
+# 构建爬虫服务
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -o bin/spider-rpc ./app/spider/rpc
+
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates tzdata \
+    && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone
+
+RUN adduser -D -s /bin/sh appuser
+
+WORKDIR /app
+
+COPY --from=builder /app/bin/spider-rpc .
+
+# 复制爬虫相关的配置文件
+COPY --from=builder /app/app/spider/rpc/etc/ ./etc/
+
+RUN chown -R appuser:appuser /app
+USER appuser
+
+EXPOSE 8081
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget --no-verbose --tries=1 --spider http://localhost:8081/health || exit 1
+
+CMD ["./spider-rpc", "-f", "etc/config.yaml"]

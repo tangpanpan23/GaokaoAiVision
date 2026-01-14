@@ -1,0 +1,54 @@
+Name: lighthousegateway-api
+Host: 0.0.0.0
+Port: 8888
+
+# 数据库配置
+Database:
+  Host: "localhost"
+  Port: 3306
+  User: "root"
+  Password: "password"
+  Database: "lighthouse_volunteer"
+  Charset: "utf8mb4"
+
+# Redis配置
+Redis:
+  Host: "localhost:6379"
+  Password: ""
+  DB: 0
+
+# RPC服务配置
+RpcClients:
+  # 数据查询服务
+  DataRpc:
+    Endpoints:
+      - "localhost:9091"
+    Timeout: 5000ms
+
+  # AI分析服务
+  AIRpc:
+    Endpoints:
+      - "localhost:9092"
+    Timeout: 10000ms
+
+  # 用户内容服务
+  UserRpc:
+    Endpoints:
+      - "localhost:9093"
+    Timeout: 5000ms
+
+  # 爬虫管理服务
+  SpiderRpc:
+    Endpoints:
+      - "localhost:9094"
+    Timeout: 5000ms
+
+# JWT配置
+Jwt:
+  Secret: "your-jwt-secret-key"
+  Expire: 86400  # 24小时
+
+# 日志配置
+Log:
+  Level: info
+  Encoding: json

@@ -1,0 +1,108 @@
+syntax = "proto3";
+
+package data;
+
+// 数据查询服务
+service Data {
+    // 查询录取分数
+    rpc QueryScore(QueryScoreReq) returns (QueryScoreResp);
+
+    // 查询分数趋势
+    rpc QueryScoreTrend(QueryScoreTrendReq) returns (QueryScoreTrendResp);
+
+    // 获取匹配的院校列表
+    rpc GetMatchingColleges(GetMatchingCollegesReq) returns (GetMatchingCollegesResp);
+}
+
+// 查询录取分数请求
+message QueryScoreReq {
+    int32 year = 1;
+    string province = 2;
+    string college = 3;
+    string major = 4;
+    int32 score_type = 5; // 1:文科, 2:理科, 3:综合改革
+    string batch = 6;
+    int32 min_score = 7;
+    int32 max_score = 8;
+    int32 page = 9;
+    int32 page_size = 10;
+}
+
+// 查询录取分数响应
+message QueryScoreResp {
+    int32 code = 1;
+    string msg = 2;
+    repeated AdmissionScore scores = 3;
+    int64 total = 4;
+}
+
+// 录取分数数据
+message AdmissionScore {
+    int64 id = 1;
+    int32 year = 2;
+    string province = 3;
+    string college_name = 4;
+    string major_name = 5;
+    int32 score_type = 6;
+    string batch = 7;
+    int32 min_score = 8;
+    int32 min_rank = 9;
+    string data_source = 10;
+    string created_at = 11;
+}
+
+// 查询分数趋势请求
+message QueryScoreTrendReq {
+    string college = 1;
+    string major = 2;
+    string province = 3;
+    int32 start_year = 4;
+    int32 end_year = 5;
+}
+
+// 查询分数趋势响应
+message QueryScoreTrendResp {
+    int32 code = 1;
+    string msg = 2;
+    repeated ScoreTrend trends = 3;
+}
+
+// 分数趋势数据
+message ScoreTrend {
+    int32 year = 1;
+    string college = 2;
+    string major = 3;
+    int32 min_score = 4;
+    int32 min_rank = 5;
+    int32 avg_score = 6;
+    string batch = 7;
+}
+
+// 获取匹配院校请求
+message GetMatchingCollegesReq {
+    int32 score = 1;
+    int32 rank = 2;
+    string province = 3;
+    string subjects = 4;
+    int32 score_type = 5;
+    string batch = 6;
+    int32 limit = 7;
+}
+
+// 获取匹配院校响应
+message GetMatchingCollegesResp {
+    int32 code = 1;
+    string msg = 2;
+    repeated MatchingCollege colleges = 3;
+}
+
+// 匹配的院校信息
+message MatchingCollege {
+    string college_name = 1;
+    string major_name = 2;
+    int32 min_score = 3;
+    int32 min_rank = 4;
+    string batch = 5;
+    int32 year = 6;
+    double probability = 7; // 录取概率
+}

@@ -1,0 +1,205 @@
+syntax = "proto3";
+
+package user;
+
+option go_package = "lighthouse-volunteer/app/user/rpc/user";
+
+// 用户服务
+service User {
+  // 用户登录/注册
+  rpc Login(LoginReq) returns (LoginResp);
+
+  // 获取用户信息
+  rpc GetUserInfo(GetUserInfoReq) returns (GetUserInfoResp);
+
+  // 更新用户档案
+  rpc UpdateUserProfile(UpdateUserProfileReq) returns (UpdateUserProfileResp);
+
+  // 获取学长分享列表
+  rpc GetSeniorShares(GetSeniorSharesReq) returns (GetSeniorSharesResp);
+
+  // 创建学长分享
+  rpc CreateSeniorShare(CreateSeniorShareReq) returns (CreateSeniorShareResp);
+
+  // 点赞/取消点赞分享
+  rpc LikeSeniorShare(LikeSeniorShareReq) returns (LikeSeniorShareResp);
+
+  // 职业测评
+  rpc CareerAssessment(CareerAssessmentReq) returns (CareerAssessmentResp);
+
+  // 获取选科规划
+  rpc GetSubjectPlan(GetSubjectPlanReq) returns (GetSubjectPlanResp);
+}
+
+// 请求和响应消息
+message LoginReq {
+  string code = 1; // 微信授权码
+  string encrypted_data = 2; // 加密数据
+  string iv = 3; // 初始向量
+}
+
+message LoginResp {
+  int64 user_id = 1;
+  string open_id = 2;
+  string union_id = 3;
+  string session_key = 4;
+  bool need_profile = 5; // 是否需要完善档案
+}
+
+message GetUserInfoReq {
+  int64 user_id = 1;
+}
+
+message GetUserInfoResp {
+  UserInfo user = 1;
+}
+
+message UserInfo {
+  int64 id = 1;
+  string open_id = 2;
+  string union_id = 3;
+  string nickname = 4;
+  string avatar = 5;
+  int32 gender = 6;
+  string province = 7;
+  string city = 8;
+  int32 status = 9;
+  string last_login_time = 10;
+  UserProfile profile = 11;
+  string created_at = 12;
+}
+
+message UserProfile {
+  int64 id = 1;
+  int64 user_id = 2;
+  int32 graduation_year = 3;
+  string province = 4;
+  int32 score_type = 5;
+  string subjects = 6;
+  int32 total_score = 7;
+  int32 rank = 8;
+  string target_college = 9;
+  string target_major = 10;
+  string interest_tags = 11;
+  string personality_type = 12;
+  string created_at = 13;
+  string updated_at = 14;
+}
+
+message UpdateUserProfileReq {
+  int64 user_id = 1;
+  int32 graduation_year = 2;
+  string province = 3;
+  int32 score_type = 4;
+  string subjects = 5;
+  int32 total_score = 6;
+  int32 rank = 7;
+  string target_college = 8;
+  string target_major = 9;
+  string interest_tags = 10;
+  string personality_type = 11;
+}
+
+message UpdateUserProfileResp {
+  bool success = 1;
+}
+
+message GetSeniorSharesReq {
+  int32 page = 1;
+  int32 page_size = 2;
+  string share_type = 3;
+  string college_code = 4;
+  string major_code = 5;
+  string keyword = 6;
+  string sort_by = 7; // time, hot
+  int64 user_id = 8; // 用于检查是否点赞
+}
+
+message GetSeniorSharesResp {
+  repeated SeniorShare shares = 1;
+  int64 total = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message SeniorShare {
+  int64 id = 1;
+  int64 user_id = 2;
+  string college_code = 3;
+  string college_name = 4;
+  string major_code = 5;
+  string major_name = 6;
+  string share_type = 7;
+  string title = 8;
+  string content = 9;
+  string tags = 10;
+  int32 is_anonymous = 11;
+  int32 view_count = 12;
+  int32 like_count = 13;
+  int32 comment_count = 14;
+  int32 status = 15;
+  string published_at = 16;
+  ShareUser user = 17;
+  bool is_liked = 18;
+  string created_at = 19;
+}
+
+message ShareUser {
+  string nickname = 1;
+  string avatar = 2;
+}
+
+message CreateSeniorShareReq {
+  int64 user_id = 1;
+  string college_code = 2;
+  string college_name = 3;
+  string major_code = 4;
+  string major_name = 5;
+  string share_type = 6;
+  string title = 7;
+  string content = 8;
+  string tags = 9;
+  int32 is_anonymous = 10;
+}
+
+message CreateSeniorShareResp {
+  int64 share_id = 1;
+}
+
+message LikeSeniorShareReq {
+  int64 user_id = 1;
+  int64 share_id = 2;
+  bool like = 3; // true-点赞，false-取消点赞
+}
+
+message LikeSeniorShareResp {
+  bool success = 1;
+  int32 like_count = 2;
+}
+
+message CareerAssessmentReq {
+  int64 user_id = 1;
+  string assessment_type = 2;
+  string answers = 3; // JSON字符串
+}
+
+message CareerAssessmentResp {
+  string assessment_type = 1;
+  string result = 2;
+  string score_details = 3;
+  string recommendations = 4;
+  string created_at = 5;
+}
+
+message GetSubjectPlanReq {
+  string province = 1;
+  int32 score_type = 2;
+  string subjects = 3;
+}
+
+message GetSubjectPlanResp {
+  string subject_combination = 1;
+  string recommended_majors = 2;
+  double success_rate = 3;
+  int32 avg_score_required = 4;
+}

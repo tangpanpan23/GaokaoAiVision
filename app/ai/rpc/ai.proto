@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package ai;
+
+option go_package = "lighthouse-volunteer/app/ai/rpc/ai";
+
+// AI分析服务
+service Ai {
+  // 生成志愿推荐
+  rpc GenerateVolunteerSuggestion(GenerateVolunteerSuggestionReq) returns (GenerateVolunteerSuggestionResp);
+
+  // AI志愿咨询
+  rpc GetVolunteerAdvice(GetVolunteerAdviceReq) returns (GetVolunteerAdviceResp);
+
+  // 分析用户画像
+  rpc AnalyzeUserProfile(AnalyzeUserProfileReq) returns (AnalyzeUserProfileResp);
+
+  // 职业兴趣分析
+  rpc AnalyzeCareerInterest(AnalyzeCareerInterestReq) returns (AnalyzeCareerInterestResp);
+
+  // 专业匹配度分析
+  rpc AnalyzeMajorMatching(AnalyzeMajorMatchingReq) returns (AnalyzeMajorMatchingResp);
+}
+
+// 请求和响应消息
+message GenerateVolunteerSuggestionReq {
+  string province = 1;
+  int32 score_type = 2;
+  int32 score = 3;
+  int32 rank = 4;
+  string subjects = 5;
+  repeated string interest_tags = 6;
+  int64 user_id = 7;
+}
+
+message GenerateVolunteerSuggestionResp {
+  repeated SuggestionCategory categories = 1;
+  string analysis_summary = 2;
+  repeated string recommendations = 3;
+  string cache_key = 4;
+}
+
+message SuggestionCategory {
+  string category = 1; // 冲/稳/保
+  repeated CollegeSuggestion colleges = 2;
+  string reason = 3;
+}
+
+message CollegeSuggestion {
+  string college_code = 1;
+  string college_name = 2;
+  string major_code = 3;
+  string major_name = 4;
+  string batch = 5;
+  int32 min_score = 6;
+  int32 min_rank = 7;
+  int32 year = 8;
+  double matching_score = 9; // 匹配度评分 0-1
+  string advantages = 10;
+  string considerations = 11;
+}
+
+message GetVolunteerAdviceReq {
+  string query = 1;
+  int64 user_id = 2;
+  string session_id = 3;
+  map<string, string> context = 4;
+}
+
+message GetVolunteerAdviceResp {
+  string answer = 1;
+  string session_id = 2;
+  repeated string sources = 3;
+  repeated RelatedQuestion related_questions = 4;
+  string confidence = 5;
+}
+
+message RelatedQuestion {
+  string question = 1;
+  string answer_preview = 2;
+}
+
+message AnalyzeUserProfileReq {
+  int64 user_id = 1;
+  string province = 2;
+  int32 score_type = 3;
+  int32 score = 4;
+  int32 rank = 5;
+  string subjects = 6;
+  repeated string interest_tags = 7;
+  string personality_type = 8;
+}
+
+message AnalyzeUserProfileResp {
+  double academic_potential = 1; // 学术潜力 0-1
+  repeated string recommended_categories = 2; // 推荐专业类别
+  repeated string career_directions = 3; // 职业发展方向
+  repeated string development_suggestions = 4; // 发展建议
+  string profile_summary = 5; // 画像总结
+}
+
+message AnalyzeCareerInterestReq {
+  int64 user_id = 1;
+  map<string, int32> answers = 2; // 测评答案
+  string assessment_type = 3; // mbti, holland, etc.
+}
+
+message AnalyzeCareerInterestResp {
+  string result_type = 1;
+  map<string, double> dimension_scores = 2; // 各维度得分
+  repeated string suitable_majors = 3; // 适合的专业
+  repeated string suitable_careers = 4; // 适合的职业
+  string analysis_report = 5; // 分析报告
+  repeated string development_advice = 6; // 发展建议
+}
+
+message AnalyzeMajorMatchingReq {
+  int64 user_id = 1;
+  string major_code = 2;
+  repeated string interest_tags = 3;
+  string personality_type = 4;
+  string career_goals = 5;
+}
+
+message AnalyzeMajorMatchingResp {
+  double overall_matching = 1; // 整体匹配度 0-1
+  double interest_matching = 2; // 兴趣匹配度 0-1
+  double personality_matching = 3; // 性格匹配度 0-1
+  double career_matching = 4; // 职业匹配度 0-1
+  repeated string matching_points = 5; // 匹配要点
+  repeated string concerns = 6; // 需注意事项
+  repeated string suggestions = 7; // 建议
+}

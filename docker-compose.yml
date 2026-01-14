@@ -1,0 +1,201 @@
+version: '3.8'
+
+services:
+  # MySQL数据库
+  mysql:
+    image: mysql:8.0
+    container_name: lighthouse-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: lighthouse2024
+      MYSQL_DATABASE: lighthouse_volunteer
+      MYSQL_USER: lighthouse
+      MYSQL_PASSWORD: lighthouse123
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - lighthouse
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  # Redis缓存
+  redis:
+    image: redis:7-alpine
+    container_name: lighthouse-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - lighthouse
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 20s
+      retries: 10
+
+  # Elasticsearch搜索引擎
+  elasticsearch:
+    image: elasticsearch:8.11.0
+    container_name: lighthouse-elasticsearch
+    restart: unless-stopped
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - lighthouse
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      timeout: 30s
+      retries: 10
+
+  # API网关服务
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: lighthouse-api
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=lighthouse
+      - DB_PASSWORD=lighthouse123
+      - DB_DATABASE=lighthouse_volunteer
+      - REDIS_HOST=redis:6379
+      - ES_HOSTS=elasticsearch:9200
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - lighthouse
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8888/health"]
+      timeout: 10s
+      retries: 3
+
+  # 爬虫服务
+  spider:
+    build:
+      context: .
+      dockerfile: Dockerfile.spider
+    container_name: lighthouse-spider
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=lighthouse
+      - DB_PASSWORD=lighthouse123
+      - DB_DATABASE=lighthouse_volunteer
+      - REDIS_HOST=redis:6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - lighthouse
+
+  # 数据查询服务
+  score:
+    build:
+      context: .
+      dockerfile: Dockerfile.score
+    container_name: lighthouse-score
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=lighthouse
+      - DB_PASSWORD=lighthouse123
+      - DB_DATABASE=lighthouse_volunteer
+      - REDIS_HOST=redis:6379
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - lighthouse
+
+  # AI分析服务
+  ai:
+    build:
+      context: .
+      dockerfile: Dockerfile.ai
+    container_name: lighthouse-ai
+    restart: unless-stopped
+    ports:
+      - "8083:8083"
+    environment:
+      - REDIS_HOST=redis:6379
+      - AI_QWEN_API_KEY=${AI_QWEN_API_KEY}
+      - AI_ERNIE_API_KEY=${AI_ERNIE_API_KEY}
+      - AI_GPT_API_KEY=${AI_GPT_API_KEY}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - lighthouse
+
+  # 用户服务
+  user:
+    build:
+      context: .
+      dockerfile: Dockerfile.user
+    container_name: lighthouse-user
+    restart: unless-stopped
+    ports:
+      - "8084:8084"
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=lighthouse
+      - DB_PASSWORD=lighthouse123
+      - DB_DATABASE=lighthouse_volunteer
+      - REDIS_HOST=redis:6379
+      - ES_HOSTS=elasticsearch:9200
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - lighthouse
+
+volumes:
+  mysql_data:
+    driver: local
+  redis_data:
+    driver: local
+  es_data:
+    driver: local
+
+networks:
+  lighthouse:
+    driver: bridge

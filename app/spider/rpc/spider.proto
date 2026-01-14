@@ -1,0 +1,110 @@
+syntax = "proto3";
+
+package spider;
+
+option go_package = "lighthouse-volunteer/app/spider/rpc/spider";
+
+// 爬虫服务
+service Spider {
+  // 获取爬虫目标列表
+  rpc GetSpiderTargets(GetSpiderTargetsReq) returns (GetSpiderTargetsResp);
+
+  // 创建爬虫任务
+  rpc CreateSpiderTask(CreateSpiderTaskReq) returns (CreateSpiderTaskResp);
+
+  // 获取任务状态
+  rpc GetTaskStatus(GetTaskStatusReq) returns (GetTaskStatusResp);
+
+  // 取消爬虫任务
+  rpc CancelSpiderTask(CancelSpiderTaskReq) returns (CancelSpiderTaskResp);
+
+  // 获取爬取结果
+  rpc GetSpiderResults(GetSpiderResultsReq) returns (GetSpiderResultsResp);
+}
+
+// 请求和响应消息
+message GetSpiderTargetsReq {
+  int32 page = 1;
+  int32 page_size = 2;
+  string data_type = 3;
+  int32 status = 4;
+}
+
+message GetSpiderTargetsResp {
+  repeated SpiderTarget targets = 1;
+  int64 total = 2;
+}
+
+message SpiderTarget {
+  int64 id = 1;
+  string name = 2;
+  string url = 3;
+  string data_type = 4;
+  int32 crawl_frequency = 5;
+  string parse_rules = 6;
+  string last_crawl_time = 7;
+  int32 status = 8;
+  string created_at = 9;
+  string updated_at = 10;
+}
+
+message CreateSpiderTaskReq {
+  int64 target_id = 1;
+}
+
+message CreateSpiderTaskResp {
+  int64 task_id = 1;
+  string asynq_task_id = 2;
+}
+
+message GetTaskStatusReq {
+  int64 task_id = 1;
+}
+
+message GetTaskStatusResp {
+  SpiderTask task = 1;
+}
+
+message SpiderTask {
+  int64 id = 1;
+  int64 target_id = 2;
+  string task_id = 3;
+  string status = 4;
+  string start_time = 5;
+  string end_time = 6;
+  int32 total_items = 7;
+  int32 success_count = 8;
+  string error_message = 9;
+  string created_at = 10;
+  string updated_at = 11;
+}
+
+message CancelSpiderTaskReq {
+  int64 task_id = 1;
+}
+
+message CancelSpiderTaskResp {
+  bool success = 1;
+}
+
+message GetSpiderResultsReq {
+  int64 task_id = 1;
+  int32 page = 2;
+  int32 page_size = 3;
+}
+
+message GetSpiderResultsResp {
+  repeated SpiderResult results = 1;
+  int64 total = 2;
+}
+
+message SpiderResult {
+  int64 id = 1;
+  int64 task_id = 2;
+  string data_type = 3;
+  string raw_data = 4;
+  string parsed_data = 5;
+  int32 status = 6;
+  string error_message = 7;
+  string created_at = 8;
+}

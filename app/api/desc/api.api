@@ -1,0 +1,342 @@
+info(
+	title: "灯塔志愿小程序API"
+	desc: "高考志愿填报辅助系统API"
+	author: "lighthouse-volunteer"
+	email: "contact@lighthouse-volunteer.com"
+	version: "v1.0.0"
+)
+
+type (
+	// 通用响应
+	BaseResponse {
+		Code int `json:"code"`
+		Msg string `json:"msg"`
+		Data interface{} `json:"data,omitempty"`
+	}
+
+	// 分页请求
+	PageRequest {
+		Page int `json:"page" form:"page"` // 页码，从1开始
+		PageSize int `json:"page_size" form:"page_size"` // 每页大小
+	}
+
+	// 分页响应
+	PageResponse {
+		Total int64 `json:"total"`
+		Page int `json:"page"`
+		PageSize int `json:"page_size"`
+		Pages int `json:"pages"`
+		List interface{} `json:"list"`
+	}
+)
+
+// 用户相关接口
+@server(
+	group: user
+)
+service api {
+	// 用户登录
+	@handler UserLogin
+	post /user/login (UserLoginReq) returns (BaseResponse)
+
+	// 更新用户档案
+	@handler UserProfileUpdate
+	put /user/profile (UserProfileUpdateReq) returns (BaseResponse)
+}
+
+// 志愿填报相关接口
+@server(
+	group: volunteer
+	jwt: JwtAuth
+)
+service api {
+	// 查询录取分数线
+	@handler ScoreQuery
+	get /volunteer/scores (ScoreQueryReq) returns (BaseResponse)
+
+	// 获取志愿推荐
+	@handler VolunteerSuggestion
+	post /volunteer/suggestion (VolunteerSuggestionReq) returns (BaseResponse)
+
+	// AI志愿咨询
+	@handler AIAdvice
+	post /volunteer/advice (AIAdviceReq) returns (BaseResponse)
+}
+
+// 学校专业信息接口
+@server(
+	group: college
+)
+service api {
+	// 查询学校信息
+	@handler CollegeQuery
+	get /college/list (CollegeQueryReq) returns (BaseResponse)
+
+	// 查询专业信息
+	@handler MajorQuery
+	get /major/list (MajorQueryReq) returns (BaseResponse)
+}
+
+// 学长分享接口
+@server(
+	group: share
+	jwt: JwtAuth
+)
+service api {
+	// 获取分享列表
+	@handler SeniorShareList
+	get /share/list (SeniorShareListReq) returns (BaseResponse)
+
+	// 创建分享
+	@handler SeniorShareCreate
+	post /share/create (SeniorShareCreateReq) returns (BaseResponse)
+
+	// 点赞分享
+	@handler SeniorShareLike
+	post /share/:id/like (SeniorShareLikeReq) returns (BaseResponse)
+}
+
+// 测评规划接口
+@server(
+	group: assessment
+	jwt: JwtAuth
+)
+service api {
+	// 职业测评
+	@handler CareerAssessment
+	post /assessment/career (CareerAssessmentReq) returns (BaseResponse)
+
+	// 选科规划查询
+	@handler SubjectPlanQuery
+	get /assessment/subject-plan (SubjectPlanQueryReq) returns (BaseResponse)
+}
+
+// 请求和响应类型定义
+type (
+	// 用户登录请求
+	UserLoginReq {
+		Code string `json:"code" validate:"required"` // 微信授权码
+	}
+
+	// 用户登录响应
+	UserLoginResp {
+		UserID int64 `json:"user_id"`
+		OpenID string `json:"open_id"`
+		Token string `json:"token"`
+		NeedProfile bool `json:"need_profile"`
+	}
+
+	// 用户档案更新请求
+	UserProfileUpdateReq {
+		UserID int64 `json:"user_id"`
+		GraduationYear int `json:"graduation_year"`
+		Province string `json:"province"`
+		ScoreType int `json:"score_type"`
+		Subjects string `json:"subjects"`
+		TotalScore int `json:"total_score"`
+		Rank int `json:"rank"`
+		TargetCollege string `json:"target_college"`
+		TargetMajor string `json:"target_major"`
+		InterestTags []string `json:"interest_tags"`
+		PersonalityType string `json:"personality_type"`
+	}
+
+	// 录取分数查询请求
+	ScoreQueryReq {
+		Province string `json:"province" form:"province"`
+		ScoreType int `json:"score_type" form:"score_type"`
+		Score int `json:"score" form:"score"`
+		Rank int `json:"rank" form:"rank"`
+		Subjects string `json:"subjects" form:"subjects"`
+	}
+
+	// 志愿推荐请求
+	VolunteerSuggestionReq {
+		Province string `json:"province"`
+		ScoreType int `json:"score_type"`
+		Score int `json:"score"`
+		Rank int `json:"rank"`
+		Subjects string `json:"subjects"`
+		InterestTags []string `json:"interest_tags"`
+	}
+
+	// 志愿推荐响应
+	VolunteerSuggestionResp {
+		Category string `json:"category"`
+		Colleges []CollegeSuggestion `json:"colleges"`
+		Reason string `json:"reason"`
+	}
+
+	// 学校推荐详情
+	CollegeSuggestion {
+		CollegeCode string `json:"college_code"`
+		CollegeName string `json:"college_name"`
+		MajorCode string `json:"major_code"`
+		MajorName string `json:"major_name"`
+		Batch string `json:"batch"`
+		MinScore int `json:"min_score"`
+		MinRank int `json:"min_rank"`
+		Year int `json:"year"`
+	}
+
+	// AI咨询请求
+	AIAdviceReq {
+		Query string `json:"query"`
+		UserID int64 `json:"user_id"`
+		SessionID string `json:"session_id"`
+	}
+
+	// AI咨询响应
+	AIAdviceResp {
+		Answer string `json:"answer"`
+		SessionID string `json:"session_id"`
+		Sources []string `json:"sources"`
+	}
+
+	// 学校信息查询请求
+	CollegeQueryReq {
+		Page int `json:"page" form:"page"`
+		PageSize int `json:"page_size" form:"page_size"`
+		Province string `json:"province" form:"province"`
+		Level string `json:"level" form:"level"`
+		Type string `json:"type" form:"type"`
+		Name string `json:"name" form:"name"`
+	}
+
+	// 学校信息查询响应
+	CollegeQueryResp {
+		PageResponse
+		List []CollegeInfo `json:"list"`
+	}
+
+	// 学校信息详情
+	CollegeInfo {
+		CollegeCode string `json:"college_code"`
+		CollegeName string `json:"college_name"`
+		Province string `json:"province"`
+		City string `json:"city"`
+		Level string `json:"level"`
+		Type string `json:"type"`
+		Nature string `json:"nature"`
+		Website string `json:"website"`
+		Description string `json:"description"`
+		Ranking int `json:"ranking"`
+		EmploymentRate float64 `json:"employment_rate"`
+	}
+
+	// 专业信息查询请求
+	MajorQueryReq {
+		Page int `json:"page" form:"page"`
+		PageSize int `json:"page_size" form:"page_size"`
+		Category string `json:"category" form:"category"`
+		DemandLevel string `json:"demand_level" form:"demand_level"`
+		Name string `json:"name" form:"name"`
+	}
+
+	// 专业信息查询响应
+	MajorQueryResp {
+		PageResponse
+		List []MajorInfo `json:"list"`
+	}
+
+	// 专业信息详情
+	MajorInfo {
+		MajorCode string `json:"major_code"`
+		MajorName string `json:"major_name"`
+		Category string `json:"category"`
+		Subcategory string `json:"subcategory"`
+		Degree string `json:"degree"`
+		Duration int `json:"duration"`
+		Description string `json:"description"`
+		EmploymentDirection string `json:"employment_direction"`
+		SalaryRange string `json:"salary_range"`
+		DemandLevel string `json:"demand_level"`
+	}
+
+	// 学长分享列表请求
+	SeniorShareListReq {
+		Page int `json:"page" form:"page"`
+		PageSize int `json:"page_size" form:"page_size"`
+		ShareType string `json:"share_type" form:"share_type"`
+		CollegeCode string `json:"college_code" form:"college_code"`
+		MajorCode string `json:"major_code" form:"major_code"`
+		Keyword string `json:"keyword" form:"keyword"`
+		SortBy string `json:"sort_by" form:"sort_by"`
+	}
+
+	// 学长分享列表响应
+	SeniorShareListResp {
+		PageResponse
+		List []SeniorShareInfo `json:"list"`
+	}
+
+	// 学长分享详情
+	SeniorShareInfo {
+		ID int64 `json:"id"`
+		UserID int64 `json:"user_id"`
+		CollegeCode string `json:"college_code"`
+		CollegeName string `json:"college_name"`
+		MajorCode string `json:"major_code"`
+		MajorName string `json:"major_name"`
+		ShareType string `json:"share_type"`
+		Title string `json:"title"`
+		Content string `json:"content"`
+		Tags []string `json:"tags"`
+		IsAnonymous bool `json:"is_anonymous"`
+		ViewCount int `json:"view_count"`
+		LikeCount int `json:"like_count"`
+		CommentCount int `json:"comment_count"`
+		PublishedAt string `json:"published_at"`
+		IsLiked bool `json:"is_liked"`
+	}
+
+	// 学长分享创建请求
+	SeniorShareCreateReq {
+		UserID int64 `json:"user_id"`
+		CollegeCode string `json:"college_code"`
+		CollegeName string `json:"college_name"`
+		MajorCode string `json:"major_code"`
+		MajorName string `json:"major_name"`
+		ShareType string `json:"share_type"`
+		Title string `json:"title"`
+		Content string `json:"content"`
+		Tags []string `json:"tags"`
+		IsAnonymous int `json:"is_anonymous"`
+	}
+
+	// 分享点赞请求
+	SeniorShareLikeReq {
+		UserID int64 `json:"user_id"`
+	}
+
+	// 职业测评请求
+	CareerAssessmentReq {
+		UserID int64 `json:"user_id"`
+		AssessmentType string `json:"assessment_type"`
+		Answers map[string]interface{} `json:"answers"`
+	}
+
+	// 职业测评响应
+	CareerAssessmentResp {
+		AssessmentType string `json:"assessment_type"`
+		Result map[string]interface{} `json:"result"`
+		ScoreDetails map[string]interface{} `json:"score_details"`
+		Recommendations string `json:"recommendations"`
+		CreatedAt string `json:"created_at"`
+	}
+
+	// 选科规划查询请求
+	SubjectPlanQueryReq {
+		Province string `json:"province" form:"province"`
+		ScoreType int `json:"score_type" form:"score_type"`
+		Subjects string `json:"subjects" form:"subjects"`
+	}
+
+	// 选科规划查询响应
+	SubjectPlanQueryResp {
+		SubjectCombination string `json:"subject_combination"`
+		RecommendedMajors []string `json:"recommended_majors"`
+		SuccessRate float64 `json:"success_rate"`
+		AvgScoreRequired int `json:"avg_score_required"`
+	}
+)

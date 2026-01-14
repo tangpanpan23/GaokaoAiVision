@@ -1,0 +1,167 @@
+syntax = "v1"
+
+// 通用请求和响应类型
+type EmptyRequest {}
+
+type BaseResponse {
+	Code int    `json:"code"`
+	Msg  string `json:"msg"`
+}
+
+// 数据查询相关API
+type QueryScoreRequest {
+	Year      int    `json:"year"`
+	Province  string `json:"province"`
+	College   string `json:"college,omitempty"`
+	Major     string `json:"major,omitempty"`
+	ScoreType int    `json:"score_type,omitempty"` // 1:文科, 2:理科, 3:综合改革
+	Batch     string `json:"batch,omitempty"`
+	MinScore  int    `json:"min_score,omitempty"`
+	MaxScore  int    `json:"max_score,omitempty"`
+}
+
+type AdmissionScore {
+	Id          int64  `json:"id"`
+	Year        int    `json:"year"`
+	Province    string `json:"province"`
+	CollegeName string `json:"college_name"`
+	MajorName   string `json:"major_name,omitempty"`
+	ScoreType   int    `json:"score_type"`
+	Batch       string `json:"batch"`
+	MinScore    int    `json:"min_score"`
+	MinRank     int    `json:"min_rank"`
+	DataSource  string `json:"data_source"`
+}
+
+type QueryScoreResponse {
+	Code  int              `json:"code"`
+	Msg   string           `json:"msg"`
+	Data  []AdmissionScore `json:"data"`
+	Total int64            `json:"total"`
+}
+
+// AI分析相关API
+type AIRecRequest {
+	Province  string `json:"province"`
+	Subjects  string `json:"subjects"` // 选科，如"物理,化学,生物"
+	Score     int    `json:"score"`
+	Rank      int    `json:"rank"`
+	Interests string `json:"interests,omitempty"` // 兴趣描述
+}
+
+type Recommendation {
+	Level      string  `json:"level"` // "冲", "稳", "保"
+	College    string  `json:"college"`
+	Major      string  `json:"major"`
+	MinRank    int     `json:"min_rank"`
+	Reason     string  `json:"reason"`
+	MatchScore float64 `json:"match_score"`
+}
+
+type AIRecResponse {
+	Code int              `json:"code"`
+	Msg  string           `json:"msg"`
+	Data []Recommendation `json:"data"`
+}
+
+// AI对话API
+type AIChatRequest {
+	UserId    string `json:"user_id,omitempty"`
+	SessionId string `json:"session_id,omitempty"`
+	Message   string `json:"message"`
+	Context   string `json:"context,omitempty"` // 上下文信息
+}
+
+type AIChatResponse {
+	Code      int    `json:"code"`
+	Msg       string `json:"msg"`
+	Reply     string `json:"reply"`
+	SessionId string `json:"session_id"`
+}
+
+// 用户内容相关API
+type GetContentRequest {
+	Category string `json:"category,omitempty"` // "college", "major", "experience"
+	College  string `json:"college,omitempty"`
+	Major    string `json:"major,omitempty"`
+	Page     int    `json:"page,default=1"`
+	PageSize int    `json:"page_size,default=20"`
+}
+
+type ContentItem {
+	Id         int64  `json:"id"`
+	Title      string `json:"title"`
+	Content    string `json:"content"`
+	AuthorId   int64  `json:"author_id"`
+	AuthorName string `json:"author_name"`
+	College    string `json:"college,omitempty"`
+	Major      string `json:"major,omitempty"`
+	Category   string `json:"category"`
+	ViewCount  int    `json:"view_count"`
+	LikeCount  int    `json:"like_count"`
+	CreateTime string `json:"create_time"`
+	UpdateTime string `json:"update_time"`
+}
+
+type GetContentResponse {
+	Code     int           `json:"code"`
+	Msg      string        `json:"msg"`
+	Data     []ContentItem `json:"data"`
+	Total    int64         `json:"total"`
+	Page     int           `json:"page"`
+	PageSize int           `json:"page_size"`
+}
+
+// 职业兴趣测评API
+type CareerTestRequest {
+	UserId   string                 `json:"user_id,omitempty"`
+	Answers  map[string]interface{} `json:"answers"` // 测评答案
+	TestType string                 `json:"test_type"` // "holland", "mbti"等
+}
+
+type CareerTestResult {
+	UserId          string   `json:"user_id"`
+	TestType        string   `json:"test_type"`
+	Result          string   `json:"result"`
+	Description     string   `json:"description"`
+	Score           int      `json:"score"`
+	RecommendMajors []string `json:"recommend_majors"`
+	CreateTime      string   `json:"create_time"`
+}
+
+type CareerTestResponse {
+	Code int              `json:"code"`
+	Msg  string           `json:"msg"`
+	Data CareerTestResult `json:"data"`
+}
+
+service lighthousegateway-api {
+	// 数据查询API
+	@handler QueryScore
+	get /api/v1/scores (QueryScoreRequest) returns (QueryScoreResponse)
+
+	@handler QueryScoreTrend
+	get /api/v1/scores/trend (QueryScoreRequest) returns (QueryScoreResponse)
+
+	// AI分析API
+	@handler GetRecommendations
+	post /api/v1/ai/recommendations (AIRecRequest) returns (AIRecResponse)
+
+	@handler AIChat
+	post /api/v1/ai/chat (AIChatRequest) returns (AIChatResponse)
+
+	// 用户内容API
+	@handler GetContent
+	get /api/v1/content (GetContentRequest) returns (GetContentResponse)
+
+	@handler GetContentDetail
+	get /api/v1/content/:id (EmptyRequest) returns (GetContentResponse)
+
+	// 职业兴趣测评API
+	@handler CareerTest
+	post /api/v1/career/test (CareerTestRequest) returns (CareerTestResponse)
+
+	@handler GetCareerResult
+	get /api/v1/career/result/:userId (EmptyRequest) returns (CareerTestResponse)
+}
+
