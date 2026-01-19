@@ -11,14 +11,6 @@ Page({
     // 功能模块
     features: [
       {
-        id: 'score-query',
-        title: '分数查询',
-        subtitle: '查询历年录取分数线',
-        icon: '/images/icons/score.png',
-        page: '/pages/score-query/index',
-        color: '#007bff'
-      },
-      {
         id: 'volunteer-suggestion',
         title: '志愿推荐',
         subtitle: 'AI智能生成志愿方案',
@@ -27,11 +19,19 @@ Page({
         color: '#28a745'
       },
       {
+        id: 'score-query',
+        title: '分数查询',
+        subtitle: '查询历年录取分数线',
+        icon: '/images/icons/score.png',
+        page: '', // 暂时空置，表示开发中
+        color: '#007bff'
+      },
+      {
         id: 'ai-chat',
         title: 'AI咨询',
         subtitle: '专业志愿规划指导',
         icon: '/images/icons/ai.png',
-        page: '/pages/ai-chat/index',
+        page: '', // 暂时空置，表示开发中
         color: '#ffc107'
       },
       {
@@ -39,7 +39,7 @@ Page({
         title: '学长分享',
         subtitle: '真实校园生活体验',
         icon: '/images/icons/share.png',
-        page: '/pages/senior-share/index',
+        page: '', // 暂时空置，表示开发中
         color: '#dc3545'
       },
       {
@@ -47,7 +47,7 @@ Page({
         title: '职业测评',
         subtitle: '探索职业兴趣方向',
         icon: '/images/icons/career.png',
-        page: '/pages/career-test/index',
+        page: '', // 暂时空置，表示开发中
         color: '#6f42c1'
       },
       {
@@ -55,7 +55,7 @@ Page({
         title: '学校专业',
         subtitle: '全面了解高校信息',
         icon: '/images/icons/college.png',
-        page: '/pages/college-info/index',
+        page: '', // 暂时空置，表示开发中
         color: '#17a2b8'
       }
     ],
@@ -134,7 +134,18 @@ Page({
   onFeatureTap(e) {
     const { page } = e.currentTarget.dataset;
 
-    if (!this.data.isLoggedIn && page !== '/pages/college-info/index') {
+    // 检查页面路径是否为空
+    if (!page) {
+      wx.showToast({
+        title: '功能开发中，敬请期待',
+        icon: 'none',
+        duration: 2000
+      });
+      return;
+    }
+
+    // 检查是否需要登录（暂时只对志愿推荐要求登录）
+    if (!this.data.isLoggedIn && page === '/pages/volunteer-suggestion/index') {
       wx.showModal({
         title: '提示',
         content: '请先登录后再使用此功能',

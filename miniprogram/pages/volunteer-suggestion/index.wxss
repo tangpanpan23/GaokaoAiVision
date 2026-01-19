@@ -5,7 +5,7 @@
 /* 页面容器 */
 .volunteer-container {
   min-height: 100vh;
-  background: var(--bg-light);
+  background: #f8f9fa;
   padding-bottom: 20px;
 }
 
@@ -22,14 +22,14 @@
   display: block;
   font-size: 20px;
   font-weight: bold;
-  color: var(--text-primary);
+  color: #333333;
   margin-bottom: 4px;
 }
 
 .section-subtitle {
   display: block;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
 }
 
 .form-card {
@@ -57,7 +57,7 @@
   display: block;
   font-size: 16px;
   font-weight: 500;
-  color: var(--text-primary);
+  color: #333333;
   margin-bottom: 8px;
 }
 
@@ -70,7 +70,7 @@
 .form-hint {
   display: block;
   font-size: 12px;
-  color: var(--text-muted);
+  color: #999999;
   margin-top: 4px;
 }
 
@@ -78,7 +78,7 @@
 .input {
   width: 100%;
   height: 44px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e9ecef;
   border-radius: 8px;
   padding: 0 12px;
   font-size: 14px;
@@ -87,7 +87,7 @@
 }
 
 .input:focus {
-  border-color: var(--primary-color);
+  border-color: #007bff;
   outline: none;
 }
 
@@ -105,7 +105,7 @@
 /* 选择器 */
 .picker-display {
   height: 44px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e9ecef;
   border-radius: 8px;
   padding: 0 12px;
   display: flex;
@@ -121,12 +121,12 @@
 
 .picker-text {
   font-size: 14px;
-  color: var(--text-primary);
+  color: #333333;
 }
 
 .picker-arrow {
   font-size: 12px;
-  color: var(--text-muted);
+  color: #999999;
 }
 
 /* 单选组 */
@@ -138,21 +138,21 @@
 .radio-item {
   flex: 1;
   height: 44px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e9ecef;
   border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
   background: white;
   transition: all 0.2s ease;
 }
 
 .radio-item.active {
-  border-color: var(--primary-color);
+  border-color: #007bff;
   background: rgba(0, 123, 255, 0.05);
-  color: var(--primary-color);
+  color: #007bff;
   font-weight: 500;
 }
 
@@ -166,18 +166,18 @@
 
 .tag-item {
   padding: 6px 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid #e9ecef;
   border-radius: 16px;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
   background: white;
   transition: all 0.2s ease;
 }
 
 .tag-item.selected {
-  border-color: var(--primary-color);
+  border-color: #007bff;
   background: rgba(0, 123, 255, 0.1);
-  color: var(--primary-color);
+  color: #007bff;
   font-weight: 500;
 }
 
@@ -203,8 +203,8 @@
 
 .btn-outline {
   background: white;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
+  border: 1px solid #007bff;
+  color: #007bff;
 }
 
 .btn-outline:active {
@@ -212,7 +212,7 @@
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  background: linear-gradient(135deg, #007bff, #0056b3);
   color: white;
 }
 
@@ -237,10 +237,10 @@
 
 .action-btn {
   padding: 6px 12px;
-  border: 1px solid var(--primary-color);
+  border: 1px solid #007bff;
   border-radius: 16px;
   font-size: 12px;
-  color: var(--primary-color);
+  color: #007bff;
   background: white;
 }
 
@@ -257,14 +257,14 @@
   display: block;
   font-size: 16px;
   font-weight: bold;
-  color: var(--text-primary);
+  color: #333333;
   margin-bottom: 8px;
 }
 
 .overview-content {
   display: block;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
   line-height: 1.6;
 }
 
@@ -283,8 +283,8 @@
 
 .category-header {
   padding: 16px;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--bg-light);
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
 }
 
 .category-title {
@@ -297,7 +297,7 @@
 .category-reason {
   display: block;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
   line-height: 1.4;
 }
 
@@ -307,7 +307,7 @@
 }
 
 .college-card {
-  border: 1px solid var(--border-color);
+  border: 1px solid #e9ecef;
   border-radius: 8px;
   padding: 16px;
   margin-top: 12px;
@@ -328,14 +328,14 @@
   display: block;
   font-size: 16px;
   font-weight: bold;
-  color: var(--text-primary);
+  color: #333333;
   margin-bottom: 4px;
 }
 
 .college-major {
   display: block;
   font-size: 14px;
-  color: var(--primary-color);
+  color: #007bff;
 }
 
 .college-info {
@@ -351,12 +351,12 @@
 }
 
 .info-label {
-  color: var(--text-secondary);
+  color: #666666;
   flex-shrink: 0;
 }
 
 .info-value {
-  color: var(--text-primary);
+  color: #333333;
 }
 
 /* 匹配度 */
@@ -368,14 +368,14 @@
 }
 
 .match-label {
-  color: var(--text-secondary);
+  color: #666666;
   margin-right: 8px;
 }
 
 .match-bar {
   flex: 1;
   height: 6px;
-  background: var(--bg-gray);
+  background: #e9ecef;
   border-radius: 3px;
   margin-right: 8px;
   overflow: hidden;
@@ -388,7 +388,7 @@
 }
 
 .match-score {
-  color: var(--primary-color);
+  color: #007bff;
   font-weight: bold;
 }
 
@@ -418,7 +418,7 @@
 .considerations-content {
   display: block;
   font-size: 12px;
-  color: var(--text-secondary);
+  color: #666666;
   line-height: 1.4;
 }
 
@@ -434,7 +434,7 @@
   display: block;
   font-size: 16px;
   font-weight: bold;
-  color: var(--text-primary);
+  color: #333333;
   margin-bottom: 12px;
 }
 
@@ -445,7 +445,7 @@
 .recommendation-item {
   display: block;
   font-size: 14px;
-  color: var(--text-secondary);
+  color: #666666;
   line-height: 1.6;
   margin-bottom: 8px;
 }

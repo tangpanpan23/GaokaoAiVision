@@ -1,54 +1,19 @@
-/* 颜色变量 */
-:root {
-  /* 主题色 */
-  --primary-color: #007bff;
-  --primary-light: #4dabf7;
-  --primary-dark: #0056b3;
+/* 颜色类 - WXSS不支持CSS变量，使用实际颜色值 */
+.text-primary { color: #007bff; }
+.text-success { color: #28a745; }
+.text-warning { color: #ffc107; }
+.text-danger { color: #dc3545; }
+.text-info { color: #17a2b8; }
+.text-muted { color: #999999; }
+.text-white { color: #ffffff; }
 
-  /* 辅助色 */
-  --success-color: #28a745;
-  --warning-color: #ffc107;
-  --danger-color: #dc3545;
-  --info-color: #17a2b8;
-
-  /* 文字颜色 */
-  --text-primary: #333333;
-  --text-secondary: #666666;
-  --text-muted: #999999;
-  --text-white: #ffffff;
-
-  /* 背景色 */
-  --bg-white: #ffffff;
-  --bg-light: #f8f9fa;
-  --bg-gray: #e9ecef;
-  --bg-dark: #343a40;
-
-  /* 边框色 */
-  --border-color: #e9ecef;
-  --border-light: #f8f9fa;
-  --border-dark: #dee2e6;
-
-  /* 阴影色 */
-  --shadow-color: rgba(0, 0, 0, 0.06);
-  --shadow-dark: rgba(0, 0, 0, 0.12);
-}
-
-/* 颜色类 */
-.text-primary { color: var(--primary-color); }
-.text-success { color: var(--success-color); }
-.text-warning { color: var(--warning-color); }
-.text-danger { color: var(--danger-color); }
-.text-info { color: var(--info-color); }
-.text-muted { color: var(--text-muted); }
-.text-white { color: var(--text-white); }
-
-.bg-primary { background-color: var(--primary-color); }
-.bg-success { background-color: var(--success-color); }
-.bg-warning { background-color: var(--warning-color); }
-.bg-danger { background-color: var(--danger-color); }
-.bg-info { background-color: var(--info-color); }
-.bg-light { background-color: var(--bg-light); }
-.bg-white { background-color: var(--bg-white); }
+.bg-primary { background-color: #007bff; }
+.bg-success { background-color: #28a745; }
+.bg-warning { background-color: #ffc107; }
+.bg-danger { background-color: #dc3545; }
+.bg-info { background-color: #17a2b8; }
+.bg-light { background-color: #f8f9fa; }
+.bg-white { background-color: #ffffff; }
 
 /* 志愿推荐颜色主题 */
 .volunteer-challenge { color: #dc3545; }
