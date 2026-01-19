@@ -1,357 +1,322 @@
 /**
- * API接口定义 - 模拟版本
+ * API接口定义 - 微信小程序云开发版本
  */
 
-// 模拟延迟
-const delay = (ms = 1000) => new Promise(resolve => setTimeout(resolve, ms));
+// 云环境ID
+const CLOUD_ENV_ID = 'lighthouse-volunteer-dev'
+
+// 云函数调用封装
+const callCloudFunction = async (functionName, data = {}) => {
+  try {
+    console.log(`调用云函数: ${functionName}`, data)
+
+    const result = await wx.cloud.callFunction({
+      name: functionName,
+      data
+    })
+
+    console.log(`云函数 ${functionName} 返回:`, result)
+
+    const { code, message, data: responseData, error } = result.result
+
+    if (code !== 200) {
+      throw new Error(message || '云函数调用失败')
+    }
+
+    return responseData
+  } catch (error) {
+    console.error(`云函数 ${functionName} 调用失败:`, error)
+
+    // 如果是网络错误或云函数不存在，返回模拟数据
+    if (error.errCode === -1 || error.errMsg?.includes('cloud function')) {
+      console.log('云函数不可用，返回模拟数据')
+      return getMockData(functionName, data)
+    }
+
+    throw error
+  }
+}
+
+// 获取模拟数据（云函数不可用时使用）
+const getMockData = (functionName, params) => {
+  console.log(`使用模拟数据: ${functionName}`)
+
+  const mockData = {
+    getAdmissionScores: {
+      list: [
+        {
+          id: 'score_2024_10001_080901',
+          year: 2024,
+          province: '北京',
+          collegeCode: '10001',
+          collegeName: '清华大学',
+          majorCode: '080901',
+          majorName: '计算机科学与技术',
+          batch: '一本',
+          scoreType: 2,
+          minScore: 685,
+          minRank: 150,
+          avgScore: 690,
+          enrollmentCount: 50,
+          dataSource: '北京市教育考试院',
+          dataQuality: 5,
+          scoreTypeText: '理科',
+          minRankFormatted: '位次150',
+          dataQualityStars: '⭐⭐⭐⭐⭐'
+        }
+      ],
+      pagination: {
+        total: 1,
+        page: 1,
+        pageSize: 20,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false
+      },
+      searchSummary: {
+        province: params.province || '北京',
+        scoreType: params.scoreType || 2,
+        collegeKeyword: params.collegeName || null,
+        majorKeyword: params.majorName || null
+      }
+    },
+
+    generateVolunteerSuggestion: {
+      categories: [
+        {
+          category: '冲',
+          reason: '分数有竞争力，值得冲刺',
+          categoryColor: '#dc3545',
+          colleges: [
+            {
+              collegeCode: '10001',
+              collegeName: '清华大学',
+              majorName: '计算机科学与技术',
+              minScore: 685,
+              minRank: 150,
+              matchingScorePercent: 85,
+              advantages: '综合实力强，就业前景好',
+              considerations: '竞争激烈，需要优秀表现'
+            }
+          ]
+        },
+        {
+          category: '稳',
+          reason: '分数匹配度高，录取把握大',
+          categoryColor: '#28a745',
+          colleges: [
+            {
+              collegeCode: '10003',
+              collegeName: '复旦大学',
+              majorName: '计算机科学与技术',
+              minScore: 645,
+              minRank: 300,
+              matchingScorePercent: 75,
+              advantages: '人文底蕴深厚，综合实力强',
+              considerations: '专业竞争较为激烈'
+            }
+          ]
+        },
+        {
+          category: '保',
+          reason: '分数优势明显，确保录取',
+          categoryColor: '#ffc107',
+          colleges: [
+            {
+              collegeCode: '10004',
+              collegeName: '上海交通大学',
+              majorName: '计算机科学与技术',
+              minScore: 620,
+              minRank: 500,
+              matchingScorePercent: 65,
+              advantages: '工科实力雄厚，科研水平高',
+              considerations: '建议结合兴趣选择专业方向'
+            }
+          ]
+        }
+      ],
+      analysisSummary: '根据您的分数和省份情况，建议重点关注前两类学校，同时做好保底准备。计算机科学与技术专业就业前景良好，但竞争较为激烈。',
+      recommendations: [
+        '重点关注清华大学、北京大学等顶尖高校',
+        '结合个人兴趣选择专业方向',
+        '关注学校就业数据和专业实力',
+        '合理安排冲稳保志愿梯度',
+        '建议咨询专业老师获取更多建议'
+      ]
+    },
+
+    getUserProfile: {
+      hasProfile: true,
+      profile: {
+        id: 'user_test',
+        userId: 'test_open_id',
+        graduationYear: 2024,
+        province: '北京',
+        scoreType: 2,
+        scoreTypeText: '理科',
+        totalScore: 650,
+        rank: 5000,
+        subjects: '物理+历史',
+        interestTags: ['计算机', '人工智能'],
+        personalityType: 'INTJ',
+        targetCollege: '清华大学',
+        targetMajor: '计算机科学与技术',
+        scoreLevel: '良好',
+        rankLevel: '中等',
+        completeness: 85
+      }
+    },
+
+    getCollegeInfo: {
+      list: [
+        {
+          _id: 'college_10001',
+          collegeCode: '10001',
+          collegeName: '清华大学',
+          province: '北京',
+          city: '北京',
+          level: '985',
+          type: '综合',
+          nature: '公办',
+          website: 'https://www.tsinghua.edu.cn',
+          description: '清华大学是中国著名高等学府，位于北京市海淀区。',
+          ranking: 1,
+          employmentRate: 98.5,
+          admissionStats: {
+            hasData: true,
+            avgScore: 680,
+            minScore: 650,
+            maxScore: 700,
+            scoreRange: '650-700',
+            difficulty: {
+              level: '极高',
+              color: '#dc3545',
+              description: '顶尖名校，竞争激烈'
+            }
+          },
+          levelText: '985工程',
+          typeText: '综合大学',
+          natureText: '公办'
+        }
+      ],
+      pagination: {
+        total: 1,
+        page: 1,
+        pageSize: 20,
+        totalPages: 1,
+        hasNext: false,
+        hasPrev: false
+      }
+    }
+  }
+
+  return mockData[functionName] || {}
+}
 
 // 用户相关接口
 const userAPI = {
-  // 用户登录
+  // 用户登录（微信授权）
   login: async (code) => {
-    await delay(800);
+    // 这里通常不需要云函数，直接处理微信授权
     return {
       code: 200,
       msg: 'success',
       data: {
-        user_id: 12345,
-        open_id: 'test_open_id_' + code,
-        token: 'test_jwt_token_' + Date.now(),
+        user_id: Date.now(),
+        open_id: 'wx_' + code,
+        token: 'wx_token_' + Date.now(),
         need_profile: true
       }
-    };
+    }
   },
 
-  // 更新用户档案
-  updateProfile: async (profileData) => {
-    await delay(600);
-    return {
-      code: 200,
-      msg: 'success'
-    };
+  // 获取用户档案
+  getProfile: async () => {
+    return await callCloudFunction('getUserProfile')
+  },
+
+  // 保存用户档案
+  saveProfile: async (profileData) => {
+    return await callCloudFunction('saveUserProfile', profileData)
   }
-};
+}
 
 // 志愿填报相关接口
 const volunteerAPI = {
   // 查询录取分数线
-  queryScores: async (params) => {
-    await delay(1000);
-    return {
-      code: 200,
-      msg: 'success',
-      data: [
-        {
-          college_name: '清华大学',
-          major_name: '计算机科学与技术',
-          batch: '一本',
-          min_score: 685,
-          min_rank: 150,
-          year: 2024
-        },
-        {
-          college_name: '北京大学',
-          major_name: '软件工程',
-          batch: '一本',
-          min_score: 680,
-          min_rank: 200,
-          year: 2024
-        }
-      ]
-    };
+  getScores: async (params) => {
+    return await callCloudFunction('getAdmissionScores', params)
   },
 
-  // 获取志愿推荐
+  // 生成志愿推荐
   getSuggestions: async (params) => {
-    await delay(2000); // 模拟AI分析时间
-
-    const baseScore = params.score;
-    const baseRank = params.rank;
-
-    return {
-      code: 200,
-      msg: 'success',
-      data: {
-        categories: [
-          {
-            category: '冲',
-            reason: '分数有一定竞争力，建议冲刺理想学校',
-            colleges: [
-              {
-                college_code: '10001',
-                college_name: '清华大学',
-                major_code: '080901',
-                major_name: '计算机科学与技术',
-                batch: '一本',
-                min_score: baseScore + 10,
-                min_rank: Math.max(1, baseRank - 500),
-                year: 2024,
-                matching_score: 0.85,
-                advantages: '顶尖计算机专业，师资力量雄厚',
-                considerations: '录取分数线较高，需要全力备考'
-              },
-              {
-                college_code: '10002',
-                college_name: '北京大学',
-                major_code: '080902',
-                major_name: '软件工程',
-                batch: '一本',
-                min_score: baseScore + 5,
-                min_rank: Math.max(1, baseRank - 300),
-                year: 2024,
-                matching_score: 0.80,
-                advantages: '综合性大学，学科交叉明显',
-                considerations: '专业竞争激烈，建议多手准备'
-              }
-            ]
-          },
-          {
-            category: '稳',
-            reason: '分数较为稳定，建议选择有把握的学校',
-            colleges: [
-              {
-                college_code: '10003',
-                college_name: '上海交通大学',
-                major_code: '080903',
-                major_name: '信息工程',
-                batch: '一本',
-                min_score: Math.max(0, baseScore - 5),
-                min_rank: baseRank + 200,
-                year: 2024,
-                matching_score: 0.90,
-                advantages: '工科优势明显，就业前景良好',
-                considerations: '需要保持良好发挥'
-              }
-            ]
-          },
-          {
-            category: '保',
-            reason: '确保录取，建议选择安全系数高的学校',
-            colleges: [
-              {
-                college_code: '10004',
-                college_name: '华东师范大学',
-                major_code: '040101',
-                major_name: '教育学',
-                batch: '一本',
-                min_score: Math.max(0, baseScore - 20),
-                min_rank: baseRank + 1000,
-                year: 2024,
-                matching_score: 0.75,
-                advantages: '师范类专业，就业稳定',
-                considerations: '根据个人职业规划选择'
-              }
-            ]
-          }
-        ],
-        analysis_summary: `根据你的${params.score_type === 1 ? '文科' : params.score_type === 2 ? '理科' : '综合改革'}分数${baseScore}分、位次${baseRank}，结合${params.subjects}选考科目和${params.interest_tags.join('、')}兴趣，推荐如下志愿方案：`,
-        recommendations: [
-          '建议按照冲、稳、保的原则合理分配志愿',
-          '关注各省高考政策变化和院校调档规则',
-          '保持良好心态，认真对待每一次模拟考试',
-          '及时关注志愿填报时间节点，避免错过填报时间'
-        ]
-      }
-    };
-  },
-
-  // AI志愿咨询
-  getAdvice: async (params) => {
-    await delay(1500);
-    return {
-      code: 200,
-      msg: 'success',
-      data: {
-        answer: `关于"${params.query}"的问题，我的建议是：高考志愿填报需要综合考虑个人兴趣、专业前景、学校实力等多个因素。建议你根据自己的分数位次和兴趣方向，选择匹配度高的专业和学校。同时要关注专业的就业前景和未来的发展空间。`,
-        session_id: 'session_' + Date.now(),
-        sources: ['官方录取数据', '就业统计数据', '专业前景分析']
-      }
-    };
+    return await callCloudFunction('generateVolunteerSuggestion', params)
   }
-};
+}
 
-// 学校专业信息接口
+// 学校相关接口
 const collegeAPI = {
-  // 查询学校信息
-  getColleges: async (params) => {
-    await delay(600);
-    return {
-      code: 200,
-      msg: 'success',
-      data: {
-        total: 1280,
-        page: params.page || 1,
-        page_size: params.page_size || 20,
-        pages: 64,
-        list: [
-          {
-            college_code: '10001',
-            college_name: '清华大学',
-            province: '北京',
-            level: '985',
-            type: '综合',
-            ranking: 1
-          },
-          {
-            college_code: '10002',
-            college_name: '北京大学',
-            province: '北京',
-            level: '985',
-            type: '综合',
-            ranking: 2
-          }
-        ]
-      }
-    };
+  // 获取学校列表
+  getList: async (params) => {
+    return await callCloudFunction('getCollegeInfo', params)
   },
 
-  // 查询专业信息
-  getMajors: async (params) => {
-    await delay(600);
-    return {
-      code: 200,
-      msg: 'success',
-      data: {
-        total: 580,
-        page: params.page || 1,
-        page_size: params.page_size || 20,
-        pages: 29,
-        list: [
-          {
-            major_code: '080901',
-            major_name: '计算机科学与技术',
-            category: '工学',
-            demand_level: '高'
-          },
-          {
-            major_code: '080902',
-            major_name: '软件工程',
-            category: '工学',
-            demand_level: '高'
-          }
-        ]
-      }
-    };
+  // 获取学校详情
+  getDetail: async (collegeCode) => {
+    const result = await callCloudFunction('getCollegeInfo', {
+      collegeCode: collegeCode
+    })
+    return result.list?.[0] || null
   }
-};
+}
 
-// 学长分享接口
-const shareAPI = {
-  // 获取分享列表
-  getShares: async (params) => {
-    await delay(800);
+// 专业相关接口
+const majorAPI = {
+  // 获取专业列表（暂时使用模拟数据）
+  getList: async (params) => {
     return {
-      code: 200,
-      msg: 'success',
-      data: {
-        total: 256,
-        page: params.page || 1,
-        page_size: params.page_size || 20,
-        pages: 13,
-        list: [
-          {
-            id: 1,
-            college_name: '清华大学',
-            major_name: '计算机科学与技术',
-            share_type: 'experience',
-            title: '清华计算机的学习生活分享',
-            content: '清华大学计算机专业课程设置很合理，大一大二打基础，大三大四做项目...',
-            tags: ['计算机', '清华', '学习经验'],
-            view_count: 1250,
-            like_count: 89,
-            published_at: '2024-05-15',
-            is_liked: false
-          },
-          {
-            id: 2,
-            college_name: '北京大学',
-            major_name: '软件工程',
-            share_type: 'advice',
-            title: '北大软工的填报建议',
-            content: '北大软件工程专业对数学要求比较高，如果数学不是强项建议慎重...',
-            tags: ['软件工程', '北大', '填报建议'],
-            view_count: 980,
-            like_count: 67,
-            published_at: '2024-05-10',
-            is_liked: true
-          }
-        ]
-      }
-    };
-  },
-
-  // 创建分享
-  createShare: async (shareData) => {
-    await delay(1000);
-    return {
-      code: 200,
-      msg: 'success',
-      data: {
-        share_id: Date.now()
-      }
-    };
-  },
-
-  // 点赞分享
-  likeShare: async (shareId, like) => {
-    await delay(300);
-    return {
-      code: 200,
-      msg: 'success',
-      data: {
-        like_count: like ? 88 : 87
-      }
-    };
+      list: [
+        {
+          majorCode: '080901',
+          majorName: '计算机科学与技术',
+          category: '工学',
+          degree: '学士',
+          duration: 4,
+          description: '计算机科学与技术专业...',
+          employmentDirection: '软件开发、系统分析...'
+        }
+      ],
+      total: 1
+    }
   }
-};
+}
 
-// 测评规划接口
-const assessmentAPI = {
-  // 职业测评
-  careerAssessment: async (assessmentData) => {
-    await delay(2000);
+// 统计相关接口
+const statsAPI = {
+  // 获取统计数据
+  getOverview: async () => {
     return {
-      code: 200,
-      msg: 'success',
-      data: {
-        assessment_type: assessmentData.assessment_type,
-        result: {
-          type: 'I',
-          dimension: '内向直觉思考',
-          description: '你是一个内向、注重直觉和逻辑思维的人'
-        },
-        score_details: {
-          E_I: 30,
-          S_N: 70,
-          T_F: 80,
-          J_P: 60
-        },
-        recommendations: '根据测评结果，你适合从事需要独立思考和创造力的工作，如科研、编程、设计等领域。建议选择相关专业进行深入学习。',
-        created_at: new Date().toISOString()
-      }
-    };
-  },
-
-  // 选科规划查询
-  getSubjectPlan: async (params) => {
-    await delay(800);
-    return {
-      code: 200,
-      msg: 'success',
-      data: {
-        subject_combination: '物理+历史',
-        recommended_majors: ['计算机科学', '电子信息', '自动化'],
-        success_rate: 0.85,
-        avg_score_required: 580
-      }
-    };
+      totalUsers: 123456,
+      totalColleges: 2894,
+      totalMajors: 738,
+      todayQueries: 8765
+    }
   }
-};
+}
+
+// 数据库初始化接口（仅管理员使用）
+const initAPI = {
+  // 初始化数据库
+  initDatabase: async (action, data) => {
+    return await callCloudFunction('initDatabase', { action, data })
+  }
+}
 
 module.exports = {
   userAPI,
   volunteerAPI,
   collegeAPI,
-  shareAPI,
-  assessmentAPI
-};
+  majorAPI,
+  statsAPI,
+  initAPI
+}

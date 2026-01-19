@@ -1,0 +1,13 @@
+{
+  "name": "generate-volunteer-suggestion",
+  "version": "1.0.0",
+  "description": "高考志愿推荐AI分析云函数",
+  "main": "index.js",
+  "dependencies": {
+    "wx-server-sdk": "latest",
+    "axios": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
