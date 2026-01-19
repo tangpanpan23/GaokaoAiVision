@@ -43,12 +43,23 @@ Page({
     isLoading: false,
 
     // 表单验证
-    formErrors: {}
+    formErrors: {},
+
+    // 标签选中状态（用于WXML显示）
+    tagSelectedStates: []
   },
 
   onLoad(options) {
     console.log('Volunteer suggestion page loaded', options);
     this.loadUserProfile();
+    this.initTagSelectedStates();
+  },
+
+  // 初始化标签选中状态
+  initTagSelectedStates() {
+    const { interestTags, form } = this.data;
+    const tagSelectedStates = interestTags.map(tag => form.interestTags.includes(tag));
+    this.setData({ tagSelectedStates });
   },
 
   // 加载用户档案信息
@@ -69,6 +80,10 @@ Page({
     // 如果有用户档案，预填表单
     if (userInfo && userInfo.profile) {
       const profile = userInfo.profile;
+      const interestTags = profile.interestTags ? profile.interestTags.split(',') : [];
+      const { interestTags: allTags } = this.data;
+      const tagSelectedStates = allTags.map(tag => interestTags.includes(tag));
+      
       this.setData({
         form: {
           province: profile.province || '',
@@ -76,8 +91,9 @@ Page({
           score: profile.totalScore || '',
           rank: profile.rank || '',
           subjects: profile.subjects || '',
-          interestTags: profile.interestTags ? profile.interestTags.split(',') : []
-        }
+          interestTags: interestTags
+        },
+        tagSelectedStates: tagSelectedStates
       });
     }
   },
@@ -119,25 +135,67 @@ Page({
 
   // 兴趣标签选择
   onInterestTagTap(e) {
-    const { tag } = e.currentTarget.dataset;
-    const { interestTags } = this.data.form;
-    const index = interestTags.indexOf(tag);
+    const { tag, index } = e.currentTarget.dataset;
+    const { interestTags, form, tagSelectedStates } = this.data;
+    const currentTags = form.interestTags || [];
+    const tagIndex = currentTags.indexOf(tag);
 
-    if (index > -1) {
+    if (tagIndex > -1) {
       // 取消选择
-      interestTags.splice(index, 1);
+      currentTags.splice(tagIndex, 1);
+      tagSelectedStates[parseInt(index)] = false;
     } else {
       // 选择标签（最多选择3个）
-      if (interestTags.length >= 3) {
+      if (currentTags.length >= 3) {
         showToast('最多只能选择3个兴趣标签', 'none');
         return;
       }
-      interestTags.push(tag);
+      currentTags.push(tag);
+      tagSelectedStates[parseInt(index)] = true;
     }
 
     this.setData({
-      'form.interestTags': interestTags
+      'form.interestTags': currentTags,
+      tagSelectedStates: tagSelectedStates
     });
+  },
+
+  // 处理推荐结果数据
+  processSuggestions(data) {
+    if (!data || !data.categories) {
+      return data;
+    }
+
+    // 志愿等级颜色映射
+    const levelColors = {
+      '冲': '#dc3545',
+      '稳': '#28a745',
+      '保': '#ffc107'
+    };
+
+    // 处理每个分类
+    const processedCategories = data.categories.map(category => {
+      // 添加分类颜色
+      category.categoryColor = levelColors[category.category] || '#666666';
+
+      // 处理每个学校
+      if (category.colleges) {
+        category.colleges = category.colleges.map(college => {
+          // 添加匹配度百分比
+          if (college.matching_score !== undefined) {
+            college.matching_score_percent = Math.round(college.matching_score * 100);
+          }
+          return college;
+        });
+      }
+
+      return category;
+    });
+
+    return {
+      ...data,
+      categories: processedCategories
+    };
   },
 
   // 生成推荐
@@ -162,8 +220,11 @@ Page({
       const response = await volunteerAPI.getSuggestions(params);
 
       if (response.code === 200) {
+        // 处理推荐结果，添加颜色和格式化数据
+        const suggestions = this.processSuggestions(response.data);
+        
         this.setData({
-          suggestions: response.data,
+          suggestions: suggestions,
           showResult: true
         });
 
@@ -227,6 +288,9 @@ Page({
       content: '确定要清空所有输入内容吗？'
     }).then((confirm) => {
       if (confirm) {
+        const { interestTags } = this.data;
+        const tagSelectedStates = interestTags.map(() => false);
+        
         this.setData({
           form: {
             province: '',
@@ -238,7 +302,8 @@ Page({
           },
           formErrors: {},
           suggestions: null,
-          showResult: false
+          showResult: false,
+          tagSelectedStates: tagSelectedStates
         });
       }
     });

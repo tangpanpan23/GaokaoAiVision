@@ -87,8 +87,10 @@
           <view
             wx:for="{{interestTags}}"
             wx:key="*this"
-            class="tag-item {{form.interestTags.includes(item) ? 'selected' : ''}}"
+            wx:for-index="idx"
+            class="tag-item {{tagSelectedStates[idx] ? 'selected' : ''}}"
             data-tag="{{item}}"
+            data-index="{{idx}}"
             bindtap="onInterestTagTap"
           >
             <text>{{item}}</text>
@@ -138,7 +140,7 @@
         class="category-section"
       >
         <view class="category-header">
-          <text class="category-title" style="color: {{category.category | getVolunteerLevelColor}}">{{category.category}}志愿</text>
+          <text class="category-title" style="color: {{category.categoryColor || '#666666'}}">{{category.category}}志愿</text>
           <text class="category-reason">{{category.reason}}</text>
         </view>
 
@@ -166,7 +168,7 @@
               </view>
               <view class="info-item">
                 <text class="info-label">最低位次：</text>
-                <text class="info-value">{{item.min_rank | formatRank}}</text>
+                <text class="info-value">{{item.min_rank > 0 ? '位次' + item.min_rank : '暂无'}}</text>
               </view>
               <view class="info-item">
                 <text class="info-label">年份：</text>
@@ -179,7 +181,7 @@
               <view class="match-bar">
                 <view class="match-progress" style="width: {{item.matching_score * 100}}%"></view>
               </view>
-              <text class="match-score">{{(item.matching_score * 100).toFixed(0)}}%</text>
+              <text class="match-score">{{item.matching_score_percent}}%</text>
             </view>
 
             <view class="college-advantages" wx:if="{{item.advantages}}">
