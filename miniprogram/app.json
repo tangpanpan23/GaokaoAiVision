@@ -1,0 +1,66 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/score-query/index",
+    "pages/volunteer-suggestion/index",
+    "pages/ai-chat/index",
+    "pages/senior-share/index",
+    "pages/career-test/index",
+    "pages/profile/index"
+  ],
+  "window": {
+    "backgroundColor": "#f8f9fa",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#007bff",
+    "navigationBarTitleText": "灯塔志愿",
+    "navigationBarTextStyle": "white",
+    "enablePullDownRefresh": false,
+    "onReachBottomDistance": 50
+  },
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#007bff",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "images/tabbar/home.png",
+        "selectedIconPath": "images/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/volunteer-suggestion/index",
+        "text": "志愿推荐",
+        "iconPath": "images/tabbar/volunteer.png",
+        "selectedIconPath": "images/tabbar/volunteer-active.png"
+      },
+      {
+        "pagePath": "pages/ai-chat/index",
+        "text": "AI咨询",
+        "iconPath": "images/tabbar/ai.png",
+        "selectedIconPath": "images/tabbar/ai-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "images/tabbar/profile.png",
+        "selectedIconPath": "images/tabbar/profile-active.png"
+      }
+    ]
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于小程序位置接口的效果展示"
+    }
+  },
+  "requiredPrivateInfos": [
+    "getLocation"
+  ],
+  "lazyCodeLoading": "requiredComponents",
+  "networkTimeout": {
+    "request": 60000,
+    "downloadFile": 60000
+  },
+  "debug": false
+}

@@ -1,0 +1,103 @@
+<!-- pages/home/index.wxml -->
+<view class="home-container">
+
+  <!-- 顶部欢迎区域 -->
+  <view class="welcome-section">
+    <view class="welcome-content">
+      <view class="welcome-text">
+        <text class="welcome-title">灯塔志愿</text>
+        <text class="welcome-subtitle">高考志愿填报智能助手</text>
+      </view>
+      <view class="user-actions">
+        <view wx:if="{{!isLoggedIn}}" class="login-btn" bindtap="onLoginTap">
+          <text>微信登录</text>
+        </view>
+        <view wx:else class="user-info" bindtap="onProfileTap">
+          <image class="avatar" src="{{userInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+          <text class="nickname">{{userInfo.nickname || '用户'}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能模块网格 -->
+  <view class="features-section">
+    <view class="section-title">核心功能</view>
+    <view class="features-grid">
+      <view
+        wx:for="{{features}}"
+        wx:key="id"
+        class="feature-card"
+        data-page="{{item.page}}"
+        bindtap="onFeatureTap"
+        style="border-left-color: {{item.color}}"
+      >
+        <view class="feature-icon">
+          <image src="{{item.icon}}" mode="aspectFit"></image>
+        </view>
+        <view class="feature-content">
+          <text class="feature-title">{{item.title}}</text>
+          <text class="feature-subtitle">{{item.subtitle}}</text>
+        </view>
+        <view class="feature-arrow">
+          <text class="arrow-icon">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计数据 -->
+  <view class="stats-section">
+    <view class="section-title">平台数据</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-value">{{stats.totalUsers}}</text>
+        <text class="stat-label">注册用户</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.totalColleges}}</text>
+        <text class="stat-label">高校数据</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.totalMajors}}</text>
+        <text class="stat-label">专业数据</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.todayQueries}}</text>
+        <text class="stat-label">今日查询</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 公告通知 -->
+  <view class="announcements-section" wx:if="{{announcements.length > 0}}">
+    <view class="section-title">最新公告</view>
+    <view class="announcements-list">
+      <view
+        wx:for="{{announcements}}"
+        wx:key="id"
+        class="announcement-item"
+        data-id="{{item.id}}"
+        bindtap="onAnnouncementTap"
+      >
+        <view class="announcement-badge" wx:if="{{item.type === 'important'}}">重要</view>
+        <view class="announcement-badge update" wx:elif="{{item.type === 'update'}}">更新</view>
+        <view class="announcement-content">
+          <text class="announcement-title">{{item.title}}</text>
+          <text class="announcement-summary">{{item.content}}</text>
+          <text class="announcement-time">{{item.time}}</text>
+        </view>
+        <view class="announcement-arrow">›</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部信息 -->
+  <view class="footer-section">
+    <view class="footer-content">
+      <text class="footer-text">灯塔志愿 © 2024</text>
+      <text class="footer-version">v{{appVersion}}</text>
+    </view>
+  </view>
+
+</view>

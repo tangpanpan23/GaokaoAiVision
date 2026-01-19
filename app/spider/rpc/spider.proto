@@ -108,3 +108,4 @@ message SpiderResult {
   string error_message = 7;
   string created_at = 8;
 }
+

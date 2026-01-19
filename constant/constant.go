@@ -138,3 +138,4 @@ const (
 	ESIndexCollege     = "college"
 	ESIndexMajor       = "major"
 )
+

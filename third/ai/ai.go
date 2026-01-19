@@ -408,3 +408,4 @@ func CareerAdviceTemplate() *PromptTemplate {
 4. 保持客观中立的态度`,
 	}
 }
+

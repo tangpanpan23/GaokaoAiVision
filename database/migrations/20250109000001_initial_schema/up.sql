@@ -218,3 +218,4 @@ CREATE TABLE `subject_plan` (
     KEY `idx_province` (`province`),
     KEY `idx_score_type` (`score_type`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='选科规划表';
+

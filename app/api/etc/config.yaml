@@ -85,3 +85,4 @@ CORS:
     - "X-Requested-With"
   AllowCredentials: true
   MaxAge: 3600
+

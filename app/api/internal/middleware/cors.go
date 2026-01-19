@@ -29,3 +29,4 @@ func (m *CORSMiddleware) Handle(next http.HandlerFunc) http.HandlerFunc {
 		next(w, r)
 	}
 }
+

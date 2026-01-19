@@ -68,3 +68,4 @@ type MajorInfo struct {
 func (MajorInfo) TableName() string {
 	return "major_info"
 }
+

@@ -36,3 +36,4 @@ type Config struct {
 	// 缓存配置
 	Cache cache.CacheConf
 }
+

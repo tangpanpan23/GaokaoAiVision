@@ -163,3 +163,4 @@ help:
 	@echo "  vet                - Run go vet"
 	@echo "  pre-commit         - Run pre-commit checks"
 	@echo "  help               - Show this help"
+

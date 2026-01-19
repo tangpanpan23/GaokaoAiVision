@@ -174,3 +174,4 @@ func PermanentRedirect(w http.ResponseWriter, url string) {
 func TemporaryRedirect(w http.ResponseWriter, url string) {
 	Redirect(w, url, http.StatusFound)
 }
+

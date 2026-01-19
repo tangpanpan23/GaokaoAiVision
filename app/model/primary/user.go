@@ -120,3 +120,4 @@ type SubjectPlan struct {
 func (SubjectPlan) TableName() string {
 	return "subject_plan"
 }
+

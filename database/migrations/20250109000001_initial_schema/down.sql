@@ -11,3 +11,4 @@ DROP TABLE IF EXISTS `college_info`;
 DROP TABLE IF EXISTS `admission_score`;
 DROP TABLE IF EXISTS `spider_task`;
 DROP TABLE IF EXISTS `spider_target`;
+

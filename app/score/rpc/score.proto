@@ -168,3 +168,4 @@ message GetRankToScoreResp {
   string confidence = 2; // high, medium, low
   string note = 3;
 }
+

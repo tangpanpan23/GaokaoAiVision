@@ -310,3 +310,4 @@ func MaskIDCard(idCard string) string {
 	}
 	return idCard[:4] + strings.Repeat("*", len(idCard)-8) + idCard[len(idCard)-4:]
 }
+

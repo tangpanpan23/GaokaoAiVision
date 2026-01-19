@@ -203,3 +203,4 @@ message GetSubjectPlanResp {
   double success_rate = 3;
   int32 avg_score_required = 4;
 }
+

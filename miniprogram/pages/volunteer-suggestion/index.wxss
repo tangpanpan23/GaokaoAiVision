@@ -1,0 +1,472 @@
+/* pages/volunteer-suggestion/index.wxss */
+@import "../../styles/colors.wxss";
+@import "../../styles/layout.wxss";
+
+/* 页面容器 */
+.volunteer-container {
+  min-height: 100vh;
+  background: var(--bg-light);
+  padding-bottom: 20px;
+}
+
+/* 表单区域 */
+.form-section {
+  padding: 20px;
+}
+
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.section-subtitle {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.form-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* 表单项 */
+.form-item {
+  margin-bottom: 20px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-item.half {
+  flex: 1;
+}
+
+.form-label {
+  display: block;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.form-label.required::after {
+  content: '*';
+  color: #dc3545;
+  margin-left: 4px;
+}
+
+.form-hint {
+  display: block;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+/* 输入框 */
+.input {
+  width: 100%;
+  height: 44px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0 12px;
+  font-size: 14px;
+  background: white;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: var(--primary-color);
+  outline: none;
+}
+
+.input.error {
+  border-color: #dc3545;
+}
+
+.error-text {
+  display: block;
+  font-size: 12px;
+  color: #dc3545;
+  margin-top: 4px;
+}
+
+/* 选择器 */
+.picker-display {
+  height: 44px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  cursor: pointer;
+}
+
+.picker-display.error {
+  border-color: #dc3545;
+}
+
+.picker-text {
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.picker-arrow {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* 单选组 */
+.radio-group {
+  display: flex;
+  gap: 12px;
+}
+
+.radio-item {
+  flex: 1;
+  height: 44px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.radio-item.active {
+  border-color: var(--primary-color);
+  background: rgba(0, 123, 255, 0.05);
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+/* 标签网格 */
+.tag-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tag-item {
+  padding: 6px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.tag-item.selected {
+  border-color: var(--primary-color);
+  background: rgba(0, 123, 255, 0.1);
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+/* 表单操作 */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn {
+  flex: 1;
+  height: 44px;
+  border-radius: 8px;
+  border: none;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-outline {
+  background: white;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.btn-outline:active {
+  background: rgba(0, 123, 255, 0.05);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+  color: white;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 结果区域 */
+.result-section {
+  padding: 20px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  padding: 6px 12px;
+  border: 1px solid var(--primary-color);
+  border-radius: 16px;
+  font-size: 12px;
+  color: var(--primary-color);
+  background: white;
+}
+
+/* 概览卡片 */
+.overview-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.overview-title {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.overview-content {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* 志愿推荐 */
+.suggestions-list {
+  margin-bottom: 16px;
+}
+
+.category-section {
+  background: white;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.category-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-light);
+}
+
+.category-title {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.category-reason {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* 学校卡片 */
+.colleges-list {
+  padding: 0 16px 16px;
+}
+
+.college-card {
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 12px;
+  background: white;
+  transition: all 0.2s ease;
+}
+
+.college-card:active {
+  transform: scale(0.98);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.college-header {
+  margin-bottom: 12px;
+}
+
+.college-name {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.college-major {
+  display: block;
+  font-size: 14px;
+  color: var(--primary-color);
+}
+
+.college-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.info-item {
+  display: flex;
+  font-size: 12px;
+}
+
+.info-label {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.info-value {
+  color: var(--text-primary);
+}
+
+/* 匹配度 */
+.college-match {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.match-label {
+  color: var(--text-secondary);
+  margin-right: 8px;
+}
+
+.match-bar {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-gray);
+  border-radius: 3px;
+  margin-right: 8px;
+  overflow: hidden;
+}
+
+.match-progress {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745, #ffc107, #dc3545);
+  border-radius: 3px;
+}
+
+.match-score {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+/* 优势和注意事项 */
+.college-advantages,
+.college-considerations {
+  margin-bottom: 8px;
+}
+
+.advantages-title,
+.considerations-title {
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.advantages-title {
+  color: #28a745;
+}
+
+.considerations-title {
+  color: #ffc107;
+}
+
+.advantages-content,
+.considerations-content {
+  display: block;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* 推荐建议 */
+.recommendations-card {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.recommendations-title {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.recommendations-list {
+  padding-left: 16px;
+}
+
+.recommendation-item {
+  display: block;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+
+/* 响应式 */
+@media (max-width: 375px) {
+  .radio-group {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .radio-item {
+    flex: none;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .college-info {
+    grid-template-columns: 1fr;
+  }
+}

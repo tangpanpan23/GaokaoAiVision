@@ -131,3 +131,4 @@ message AnalyzeMajorMatchingResp {
   repeated string concerns = 6; // 需注意事项
   repeated string suggestions = 7; // 建议
 }
+

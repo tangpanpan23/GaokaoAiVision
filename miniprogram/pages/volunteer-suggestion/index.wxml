@@ -1,0 +1,212 @@
+<!-- pages/volunteer-suggestion/index.wxml -->
+<view class="volunteer-container">
+
+  <!-- 表单区域 -->
+  <view class="form-section">
+    <view class="section-header">
+      <text class="section-title">志愿推荐</text>
+      <text class="section-subtitle">输入信息，AI为你推荐最适合的志愿</text>
+    </view>
+
+    <view class="form-card">
+
+      <!-- 高考省份 -->
+      <view class="form-item">
+        <text class="form-label required">高考省份</text>
+        <picker mode="selector" range="{{provinces}}" value="{{form.province}}" bindchange="onProvinceChange">
+          <view class="picker-display {{formErrors.province ? 'error' : ''}}">
+            <text class="picker-text">{{form.province || '请选择省份'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+        <text class="error-text" wx:if="{{formErrors.province}}">{{formErrors.province}}</text>
+      </view>
+
+      <!-- 分数类型 -->
+      <view class="form-item">
+        <text class="form-label required">分数类型</text>
+        <view class="radio-group">
+          <view
+            wx:for="{{['文科', '理科', '综合改革']}}"
+            wx:key="*this"
+            class="radio-item {{form.scoreType === index + 1 ? 'active' : ''}}"
+            data-value="{{index + 1}}"
+            bindtap="onScoreTypeChange"
+          >
+            <text>{{item}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 分数和位次 -->
+      <view class="form-row">
+        <view class="form-item half">
+          <text class="form-label required">高考分数</text>
+          <input
+            class="input {{formErrors.score ? 'error' : ''}}"
+            type="number"
+            placeholder="请输入分数"
+            value="{{form.score}}"
+            data-field="score"
+            bindinput="onInputChange"
+            maxlength="3"
+          />
+          <text class="error-text" wx:if="{{formErrors.score}}">{{formErrors.score}}</text>
+        </view>
+        <view class="form-item half">
+          <text class="form-label">位次</text>
+          <input
+            class="input"
+            type="number"
+            placeholder="选填"
+            value="{{form.rank}}"
+            data-field="rank"
+            bindinput="onInputChange"
+            maxlength="6"
+          />
+        </view>
+      </view>
+
+      <!-- 选考科目 -->
+      <view class="form-item">
+        <text class="form-label required">选考科目</text>
+        <picker mode="selector" range="{{subjectCombinations}}" value="{{form.subjects}}" bindchange="onSubjectChange">
+          <view class="picker-display {{formErrors.subjects ? 'error' : ''}}">
+            <text class="picker-text">{{form.subjects || '请选择科目组合'}}</text>
+            <text class="picker-arrow">▼</text>
+          </view>
+        </picker>
+        <text class="error-text" wx:if="{{formErrors.subjects}}">{{formErrors.subjects}}</text>
+      </view>
+
+      <!-- 兴趣标签 -->
+      <view class="form-item">
+        <text class="form-label required">兴趣方向</text>
+        <text class="form-hint">最多选择3个（可多选）</text>
+        <view class="tag-grid">
+          <view
+            wx:for="{{interestTags}}"
+            wx:key="*this"
+            class="tag-item {{form.interestTags.includes(item) ? 'selected' : ''}}"
+            data-tag="{{item}}"
+            bindtap="onInterestTagTap"
+          >
+            <text>{{item}}</text>
+          </view>
+        </view>
+        <text class="error-text" wx:if="{{formErrors.interestTags}}">{{formErrors.interestTags}}</text>
+      </view>
+
+      <!-- 操作按钮 -->
+      <view class="form-actions">
+        <button class="btn btn-outline" bindtap="onResetForm">重置</button>
+        <button
+          class="btn btn-primary"
+          bindtap="onGenerateSuggestion"
+          loading="{{isLoading}}"
+          disabled="{{isLoading}}"
+        >
+          {{isLoading ? '分析中...' : '生成推荐'}}
+        </button>
+      </view>
+
+    </view>
+  </view>
+
+  <!-- 推荐结果区域 -->
+  <view class="result-section" wx:if="{{showResult && suggestions}}">
+    <view class="section-header">
+      <text class="section-title">推荐结果</text>
+      <view class="result-actions">
+        <button class="action-btn" bindtap="onSaveResult">保存</button>
+        <button class="action-btn" bindtap="onShareResult">分享</button>
+        <button class="action-btn" bindtap="onRegenerate">重新生成</button>
+      </view>
+    </view>
+
+    <!-- 推荐概览 -->
+    <view class="overview-card" wx:if="{{suggestions.analysis_summary}}">
+      <text class="overview-title">分析概况</text>
+      <text class="overview-content">{{suggestions.analysis_summary}}</text>
+    </view>
+
+    <!-- 志愿推荐列表 -->
+    <view class="suggestions-list">
+      <view
+        wx:for="{{suggestions.categories}}"
+        wx:key="category"
+        class="category-section"
+      >
+        <view class="category-header">
+          <text class="category-title" style="color: {{category.category | getVolunteerLevelColor}}">{{category.category}}志愿</text>
+          <text class="category-reason">{{category.reason}}</text>
+        </view>
+
+        <view class="colleges-list">
+          <view
+            wx:for="{{category.colleges}}"
+            wx:key="college_code"
+            class="college-card"
+            data-college-code="{{item.college_code}}"
+            bindtap="onCollegeTap"
+          >
+            <view class="college-header">
+              <text class="college-name">{{item.college_name}}</text>
+              <text class="college-major">{{item.major_name}}</text>
+            </view>
+
+            <view class="college-info">
+              <view class="info-item">
+                <text class="info-label">批次：</text>
+                <text class="info-value">{{item.batch}}</text>
+              </view>
+              <view class="info-item">
+                <text class="info-label">最低分：</text>
+                <text class="info-value">{{item.min_score}}分</text>
+              </view>
+              <view class="info-item">
+                <text class="info-label">最低位次：</text>
+                <text class="info-value">{{item.min_rank | formatRank}}</text>
+              </view>
+              <view class="info-item">
+                <text class="info-label">年份：</text>
+                <text class="info-value">{{item.year}}年</text>
+              </view>
+            </view>
+
+            <view class="college-match" wx:if="{{item.matching_score}}">
+              <text class="match-label">匹配度：</text>
+              <view class="match-bar">
+                <view class="match-progress" style="width: {{item.matching_score * 100}}%"></view>
+              </view>
+              <text class="match-score">{{(item.matching_score * 100).toFixed(0)}}%</text>
+            </view>
+
+            <view class="college-advantages" wx:if="{{item.advantages}}">
+              <text class="advantages-title">优势：</text>
+              <text class="advantages-content">{{item.advantages}}</text>
+            </view>
+
+            <view class="college-considerations" wx:if="{{item.considerations}}">
+              <text class="considerations-title">注意事项：</text>
+              <text class="considerations-content">{{item.considerations}}</text>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 推荐建议 -->
+    <view class="recommendations-card" wx:if="{{suggestions.recommendations && suggestions.recommendations.length > 0}}">
+      <text class="recommendations-title">填报建议</text>
+      <view class="recommendations-list">
+        <text
+          wx:for="{{suggestions.recommendations}}"
+          wx:key="*this"
+          class="recommendation-item"
+        >• {{item}}</text>
+      </view>
+    </view>
+  </view>
+
+</view>

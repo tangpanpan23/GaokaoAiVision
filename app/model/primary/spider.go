@@ -54,3 +54,4 @@ func (t *SpiderTask) BeforeCreate(tx *gorm.DB) error {
 	}
 	return nil
 }
+
