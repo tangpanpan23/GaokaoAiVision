@@ -359,9 +359,14 @@ function processAnalysisResult(result, candidates) {
 
 // 主函数
 exports.main = async (event, context) => {
+  const startTime = Date.now()  // 记录开始时间
   console.log('收到志愿推荐请求:', event)
 
   try {
+    // 获取用户信息（可信的）
+    const { OPENID, APPID } = cloud.getWXContext()
+    console.log('用户信息:', { OPENID, APPID })
+
     // 参数验证
     const { province, scoreType, score, rank, subjects, interestTags } = event
 
@@ -396,11 +401,14 @@ exports.main = async (event, context) => {
     try {
       await db.collection('volunteer_suggestions').add({
         data: {
-          userId: event.userInfo?.openId || 'anonymous',
+          userId: OPENID || 'anonymous',  // 使用可信的 OPENID
+          appId: APPID,
           inputData: userInput,
           result: result.data,
           aiModel: result.model,
-          createdAt: db.serverDate()
+          responseTime: Date.now() - startTime,  // 记录响应时间
+          createdAt: db.serverDate(),
+          updatedAt: db.serverDate()
         }
       })
     } catch (saveError) {

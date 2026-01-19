@@ -86,7 +86,51 @@ flowchart TD
 - **容器化**: Docker + Kubernetes
 - **AI服务**: 通义千问、文心一言、GPT-4
 
-### 核心服务
+### 微信小程序云开发架构（当前实现）
+
+本项目采用**微信小程序云开发**架构，基于官方云开发能力实现：
+
+#### 核心能力
+
+1. **云数据库** (`miniprogram/cloud-functions/`)
+   - JSON数据库，灵活的数据结构
+   - 自动索引优化
+   - 小程序端和云函数端双重权限控制
+
+2. **云函数** 
+   - Node.js 运行时环境
+   - 无需管理服务器
+   - 自动扩缩容
+
+3. **云存储**
+   - 文件上传下载
+   - 权限管理
+   - CDN加速
+
+4. **AI能力集成**
+   - 通义千问（阿里云）
+   - 文心一言（百度）
+   - 智能模型选择
+
+#### 云函数列表
+
+- `generateVolunteerSuggestion`: AI志愿推荐分析
+- `getAdmissionScores`: 录取分数线查询
+- `saveUserProfile`: 用户档案管理
+- `getUserProfile`: 获取用户档案
+- `getCollegeInfo`: 学校信息查询
+- `initDatabase`: 数据库初始化
+
+#### 相关文档
+
+- [云开发部署指南](CLOUD_DEPLOY_GUIDE.md) - 完整的部署步骤
+- [技术方案详解](TECHNICAL_SOLUTION.md) - 详细的技术架构
+- [最佳实践指南](miniprogram/cloud-functions/BEST_PRACTICES.md) - 基于官方文档的最佳实践
+- [快速参考](miniprogram/CLOUD_QUICK_REFERENCE.md) - API速查表
+
+### Go微服务架构（可选扩展）
+
+如需更高性能或更复杂的业务逻辑，可使用以下Go微服务架构：
 
 1. **API网关服务** (`app/api/`)
    - RESTful API接口
